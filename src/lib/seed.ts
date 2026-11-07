@@ -249,6 +249,71 @@ const SQLITE_INIT_TABLES = [
   );`,
   `CREATE UNIQUE INDEX IF NOT EXISTS "Invoice_invoiceNumber_key" ON "Invoice"("invoiceNumber");`,
 
+  `CREATE TABLE IF NOT EXISTS "Vendor" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "contactPerson" TEXT,
+    "email" TEXT,
+    "phone" TEXT,
+    "gstin" TEXT,
+    "address" TEXT,
+    "city" TEXT,
+    "state" TEXT,
+    "pincode" TEXT,
+    "category" TEXT DEFAULT 'SERVICE',
+    "status" TEXT NOT NULL DEFAULT 'ACTIVE',
+    "notes" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+  );`,
+
+  `CREATE TABLE IF NOT EXISTS "PurchaseOrder" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "poNumber" TEXT NOT NULL,
+    "orderDate" TEXT NOT NULL,
+    "expectedDeliveryDate" TEXT,
+    "paymentTerms" TEXT DEFAULT 'Net 15 Days',
+    "poValidity" TEXT DEFAULT '30 Days',
+    "projectRefNo" TEXT,
+    "deliveryTerms" TEXT DEFAULT 'As per agreed schedule',
+    "modeOfTransport" TEXT DEFAULT 'By Courier / Transport',
+    "remarks" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'DRAFT',
+    "vendorId" TEXT,
+    "vendorName" TEXT NOT NULL,
+    "vendorAddress" TEXT,
+    "vendorGstin" TEXT,
+    "vendorEmail" TEXT,
+    "vendorPhone" TEXT,
+    "buyerName" TEXT NOT NULL DEFAULT 'CODEKAPS DIGITAL INNOVATIONS PVT. LTD.',
+    "buyerAddress" TEXT NOT NULL DEFAULT 'A-12, Sector 4, Noida, Uttar Pradesh – 201301\nIndia',
+    "buyerGstin" TEXT NOT NULL DEFAULT '03AAMCC6345B1Z0',
+    "buyerPhone" TEXT NOT NULL DEFAULT '7528835379',
+    "buyerEmail" TEXT NOT NULL DEFAULT 'info@codekap.in',
+    "itemsJson" TEXT NOT NULL DEFAULT '[]',
+    "isInterState" BOOLEAN NOT NULL DEFAULT 1,
+    "subtotal" REAL NOT NULL DEFAULT 0,
+    "totalDiscount" REAL NOT NULL DEFAULT 0,
+    "taxableAmount" REAL NOT NULL DEFAULT 0,
+    "cgstTotal" REAL NOT NULL DEFAULT 0,
+    "sgstTotal" REAL NOT NULL DEFAULT 0,
+    "igstTotal" REAL NOT NULL DEFAULT 0,
+    "grandTotal" REAL NOT NULL DEFAULT 0,
+    "amountInWords" TEXT,
+    "showBankDetails" BOOLEAN NOT NULL DEFAULT 1,
+    "bankDetailsJson" TEXT,
+    "terms" TEXT,
+    "signatoryName" TEXT DEFAULT 'Authorized Signatory',
+    "signatoryCompany" TEXT DEFAULT 'CODEKAPS DIGITAL INNOVATIONS PRIVATE LIMITED',
+    "signatureUrl" TEXT DEFAULT '/images/aman-signature.png',
+    "notes" TEXT,
+    "createdById" TEXT,
+    "createdByName" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+  );`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS "PurchaseOrder_poNumber_key" ON "PurchaseOrder"("poNumber");`,
+
   `CREATE TABLE IF NOT EXISTS "Expense" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "date" TEXT NOT NULL,
@@ -892,6 +957,205 @@ export async function ensureSeedData() {
         }
       });
     }
+
+    // -------------------------------------------------------------
+    // Seed Real Procurement Vendors
+    // -------------------------------------------------------------
+    const seedVendors = [
+      {
+        id: 'ven_abc_tech_01',
+        name: 'ABC Technologies Pvt. Ltd.',
+        contactPerson: 'Rajesh Sharma',
+        email: 'sales@abctech.in',
+        phone: '+91-9876543210',
+        gstin: '09ABCDE1234F1Z5',
+        address: '123 Business Park, Sector 62, Noida, Uttar Pradesh - 201309\nIndia',
+        city: 'Noida',
+        state: 'Uttar Pradesh',
+        pincode: '201309',
+        category: 'SERVICE',
+        status: 'ACTIVE',
+        notes: 'Primary IT infrastructure & web development vendor partner',
+      },
+      {
+        id: 'ven_aws_india_02',
+        name: 'Amazon Web Services India Pvt Ltd',
+        contactPerson: 'Enterprise Cloud Accounts',
+        email: 'aws-india-billing@amazon.com',
+        phone: '+91 80 4040 0000',
+        gstin: '29AABCA9876C1Z1',
+        address: 'Bagmane World Technology Center, Outer Ring Road, Mahadevapura, Bengaluru, Karnataka - 560048',
+        city: 'Bengaluru',
+        state: 'Karnataka',
+        pincode: '560048',
+        category: 'CLOUD',
+        status: 'ACTIVE',
+        notes: 'Cloud hosting, compute clusters, CDN & cloud database infrastructure',
+      },
+      {
+        id: 'ven_google_cloud_03',
+        name: 'Google Cloud India Pvt Ltd',
+        contactPerson: 'Enterprise Billing & Workspace',
+        email: 'gsuite-billing-in@google.com',
+        phone: '+91 124 451 2900',
+        gstin: '06AAACG8466J1ZQ',
+        address: 'Unitech Signature Tower, Sector 30, Gurugram, Haryana - 122001',
+        city: 'Gurugram',
+        state: 'Haryana',
+        pincode: '122001',
+        category: 'SOFTWARE',
+        status: 'ACTIVE',
+        notes: 'Google Workspace business suite, Gemini AI APIs & cloud infrastructure',
+      },
+      {
+        id: 'ven_razorpay_04',
+        name: 'Razorpay Software Private Limited',
+        contactPerson: 'Payment Gateway Partner Desk',
+        email: 'procurement@razorpay.com',
+        phone: '+91 80 6828 3838',
+        gstin: '29AABCR8007F1Z6',
+        address: 'SJR Cyber, 1st Floor, 22 Laskar-Hosur Road, Adugodi, Bengaluru, Karnataka - 560030',
+        city: 'Bengaluru',
+        state: 'Karnataka',
+        pincode: '560030',
+        category: 'FINTECH',
+        status: 'ACTIVE',
+        notes: 'Payment gateway API, payment links and merchant settlement services',
+      },
+    ];
+
+    for (const v of seedVendors) {
+      const existingVendor = await prisma.vendor.findFirst({
+        where: { OR: [{ id: v.id }, { name: v.name }] },
+      });
+      if (!existingVendor) {
+        await prisma.vendor.create({ data: v });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Seed Reference Sample Purchase Order (CK-PO-2025-001)
+    // Matches the visual reference mockup exactly
+    // -------------------------------------------------------------
+    const existingRefPO = await prisma.purchaseOrder.findUnique({
+      where: { poNumber: 'CK-PO-2025-001' },
+    });
+
+    if (!existingRefPO) {
+      const sampleItems = [
+        {
+          srNo: 1,
+          description: 'Web Development Services',
+          deliverables: [
+            '(Website Design & Development)',
+            '- UI/UX Design',
+            '- Frontend & Backend Development',
+            '- Testing & Deployment',
+          ],
+          hsn: '998365',
+          qty: 1,
+          unit: 'NOS',
+          unitPrice: 50000,
+          discount: 0,
+          taxableAmount: 50000,
+          gstRate: 18,
+          cgstRate: 0,
+          cgstAmount: 0,
+          sgstRate: 0,
+          sgstAmount: 0,
+          igstRate: 18,
+          igstAmount: 9000,
+          totalAmount: 59000,
+        },
+        {
+          srNo: 2,
+          description: 'Domain Registration',
+          deliverables: ['(1 Year)'],
+          hsn: '998313',
+          qty: 1,
+          unit: 'NOS',
+          unitPrice: 1200,
+          discount: 0,
+          taxableAmount: 1200,
+          gstRate: 18,
+          cgstRate: 0,
+          cgstAmount: 0,
+          sgstRate: 0,
+          sgstAmount: 0,
+          igstRate: 18,
+          igstAmount: 216,
+          totalAmount: 1416,
+        },
+        {
+          srNo: 3,
+          description: 'Hosting Setup & Configuration',
+          deliverables: ['(1 Year)'],
+          hsn: '998313',
+          qty: 1,
+          unit: 'NOS',
+          unitPrice: 3000,
+          discount: 0,
+          taxableAmount: 3000,
+          gstRate: 18,
+          cgstRate: 0,
+          cgstAmount: 0,
+          sgstRate: 0,
+          sgstAmount: 0,
+          igstRate: 18,
+          igstAmount: 540,
+          totalAmount: 3540,
+        },
+      ];
+
+      await prisma.purchaseOrder.create({
+        data: {
+          poNumber: 'CK-PO-2025-001',
+          orderDate: '10-10-2025',
+          expectedDeliveryDate: '15-10-2025',
+          paymentTerms: 'Net 15 Days',
+          poValidity: '30 Days',
+          projectRefNo: 'PRJ-CK-2025-08',
+          deliveryTerms: 'As per agreed schedule',
+          modeOfTransport: 'By Courier / Transport',
+          remarks: 'Please confirm the order and share the tracking details.',
+          status: 'ISSUED',
+          vendorId: 'ven_abc_tech_01',
+          vendorName: 'ABC Technologies Pvt. Ltd.',
+          vendorAddress: '123 Business Park, Sector 62,\nNoida, Uttar Pradesh - 201309\nIndia',
+          vendorGstin: '09ABCDE1234F1Z5',
+          vendorEmail: 'sales@abctech.in',
+          vendorPhone: '+91-9876543210',
+          buyerName: 'CODEKAPS DIGITAL INNOVATIONS PVT. LTD.',
+          buyerAddress: 'A-12, Sector 4, Noida, Uttar Pradesh – 201301\nIndia',
+          buyerGstin: '03AAMCC6345B1Z0',
+          buyerPhone: '7528835379',
+          buyerEmail: 'info@codekap.in',
+          itemsJson: JSON.stringify(sampleItems),
+          isInterState: true,
+          subtotal: 54200,
+          totalDiscount: 0,
+          taxableAmount: 54200,
+          cgstTotal: 0,
+          sgstTotal: 0,
+          igstTotal: 9756,
+          grandTotal: 63956,
+          amountInWords: 'Sixty Three Thousand Nine Hundred Fifty Six Rupees Only',
+          showBankDetails: true,
+          terms: `1. Payment Terms: Net 15 Days from the date of invoice.
+2. Delivery Timeline: As per agreed schedule mentioned above.
+3. Scope of Work: As per the agreed quotation / project details.
+4. GST: Currently unregistered for GST. No GST is charged on this purchase order.
+5. Warranty: As per vendor terms and conditions.
+6. Validity: This PO is valid for 30 days from the date of issue.`,
+          signatoryName: 'Authorized Signatory',
+          signatoryCompany: 'CODEKAPS DIGITAL INNOVATIONS PRIVATE LIMITED',
+          signatureUrl: '/images/aman-signature.png',
+          createdById: 'usr_aman',
+          createdByName: 'Aman Sir',
+        },
+      });
+    }
+
     isSeeded = true;
   } catch (err) {
     console.warn('[Seed Data Warning]:', err);

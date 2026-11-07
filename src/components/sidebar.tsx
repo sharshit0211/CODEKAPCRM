@@ -38,6 +38,7 @@ import {
   Globe,
   MessageSquare,
   Database,
+  ShoppingBag,
 } from 'lucide-react';
 
 interface NavItem {
@@ -168,6 +169,7 @@ export function Sidebar() {
         { name: 'Finance Overview', href: '/finance', icon: DollarSign, departments: ['ALL', 'DEVELOPMENT', 'MARKETING', 'SALES', 'MANAGEMENT'] },
         { name: 'Quotations', href: '/finance/quotations', icon: Receipt, departments: ['ALL', 'DEVELOPMENT', 'MARKETING', 'SALES', 'MANAGEMENT'] },
         { name: 'Invoices & Payments', href: '/finance/invoices', icon: Receipt, departments: ['ALL', 'DEVELOPMENT', 'MARKETING', 'SALES', 'MANAGEMENT'] },
+        { name: 'Purchase Orders', href: '/finance/purchase-orders', icon: ShoppingBag, departments: ['ALL', 'DEVELOPMENT', 'MARKETING', 'SALES', 'MANAGEMENT'] },
         { name: 'Company Expenses', href: '/finance/expenses', icon: Wallet, departments: ['ALL', 'DEVELOPMENT', 'MARKETING', 'SALES', 'MANAGEMENT'] },
         { name: 'GST & Business Reports', href: '/finance/reports', icon: PieChart, departments: ['ALL', 'DEVELOPMENT', 'MARKETING', 'SALES', 'MANAGEMENT'] },
       ],

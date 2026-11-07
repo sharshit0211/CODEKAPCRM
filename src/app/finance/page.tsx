@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { DashboardLayout } from '../../components/dashboard-layout';
 import { AuthGuard } from '../../components/auth-guard';
-import { DollarSign, Receipt, TrendingUp, AlertCircle, ArrowUpRight, Plus, FileText, Wallet, PieChart, ShieldCheck } from 'lucide-react';
+import { DollarSign, Receipt, TrendingUp, AlertCircle, ArrowUpRight, Plus, FileText, Wallet, PieChart, ShieldCheck, ShoppingBag } from 'lucide-react';
 
 export default function FinanceOverviewPage() {
   const [stats, setStats] = useState({
@@ -64,6 +64,13 @@ export default function FinanceOverviewPage() {
 
           <div className="flex items-center gap-2">
             <Link
+              href="/finance/purchase-orders"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold transition-colors"
+            >
+              <ShoppingBag className="w-3.5 h-3.5 text-amber-600" />
+              <span>Purchase Orders</span>
+            </Link>
+            <Link
               href="/finance/quotations"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
             >
@@ -107,7 +114,25 @@ export default function FinanceOverviewPage() {
         </div>
 
         {/* Quick Navigation Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <Link
+            href="/finance/purchase-orders"
+            className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-amber-400 shadow-2xs transition-all flex flex-col justify-between group"
+          >
+            <div>
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 mb-1">Purchase Orders (PO)</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Issue branded procurement POs, manage vendor contracts, itemized GST delivery schedules and PDF generation.
+              </p>
+            </div>
+            <span className="text-xs font-bold text-amber-700 mt-4 flex items-center gap-1">
+              Procurement Hub →
+            </span>
+          </Link>
+
           <Link
             href="/finance/invoices"
             className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 shadow-2xs transition-all flex flex-col justify-between group"

@@ -293,6 +293,70 @@ model Invoice {
   updatedAt             DateTime @updatedAt
 }
 
+model Vendor {
+  id            String   @id @default(cuid())
+  name          String
+  contactPerson String?
+  email         String?
+  phone         String?
+  gstin         String?
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+  category      String?  @default("SERVICE") // SERVICE, SOFTWARE, HARDWARE, CONSULTING, CLOUD, OTHER
+  status        String   @default("ACTIVE")  // ACTIVE, INACTIVE
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PurchaseOrder {
+  id                   String   @id @default(cuid())
+  poNumber             String   @unique
+  orderDate            String
+  expectedDeliveryDate String?
+  paymentTerms         String?  @default("Net 15 Days")
+  poValidity           String?  @default("30 Days")
+  projectRefNo         String?
+  deliveryTerms        String?  @default("As per agreed schedule")
+  modeOfTransport      String?  @default("By Courier / Transport")
+  remarks              String?
+  status               String   @default("DRAFT") // DRAFT, ISSUED, APPROVED, CANCELLED
+  vendorId             String?
+  vendorName           String
+  vendorAddress        String?
+  vendorGstin          String?
+  vendorEmail          String?
+  vendorPhone          String?
+  buyerName            String   @default("CODEKAPS DIGITAL INNOVATIONS PVT. LTD.")
+  buyerAddress         String   @default("A-12, Sector 4, Noida, Uttar Pradesh – 201301\nIndia")
+  buyerGstin           String   @default("03AAMCC6345B1Z0")
+  buyerPhone           String   @default("7528835379")
+  buyerEmail           String   @default("info@codekap.in")
+  itemsJson            String   @default("[]")
+  isInterState         Boolean  @default(true)
+  subtotal             Float    @default(0)
+  totalDiscount        Float    @default(0)
+  taxableAmount        Float    @default(0)
+  cgstTotal            Float    @default(0)
+  sgstTotal            Float    @default(0)
+  igstTotal            Float    @default(0)
+  grandTotal           Float    @default(0)
+  amountInWords        String?
+  showBankDetails      Boolean  @default(true)
+  bankDetailsJson      String?
+  terms                String?
+  signatoryName        String?  @default("Authorized Signatory")
+  signatoryCompany     String?  @default("CODEKAPS DIGITAL INNOVATIONS PRIVATE LIMITED")
+  signatureUrl         String?  @default("/images/aman-signature.png")
+  notes                String?
+  createdById          String?
+  createdByName        String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
 model Expense {
   id            String   @id @default(cuid())
   date          String

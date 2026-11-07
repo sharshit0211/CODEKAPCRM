@@ -828,3 +828,100 @@ export interface SundryDebtorCustomer {
   exportType?: string;
   lutNumber?: string;
 }
+
+export interface POLineItem {
+  id?: string;
+  srNo: number;
+  description: string;
+  deliverables?: string[];
+  hsn: string;
+  qty: number;
+  unit?: string;
+  unitPrice: number;
+  discount: number;
+  taxableAmount: number;
+  gstRate: number;
+  cgstRate?: number;
+  cgstAmount?: number;
+  sgstRate?: number;
+  sgstAmount?: number;
+  igstRate?: number;
+  igstAmount?: number;
+  totalAmount: number;
+}
+
+export interface VendorItem {
+  id: string;
+  name: string;
+  contactPerson?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  gstin?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  category?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  notes?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type POStatus = 'DRAFT' | 'ISSUED' | 'APPROVED' | 'CANCELLED';
+
+export interface PurchaseOrderItem {
+  id: string;
+  poNumber: string;
+  orderDate: string;
+  expectedDeliveryDate?: string | null;
+  paymentTerms?: string | null;
+  poValidity?: string | null;
+  projectRefNo?: string | null;
+  deliveryTerms?: string | null;
+  modeOfTransport?: string | null;
+  remarks?: string | null;
+  status: POStatus;
+
+  // Vendor details
+  vendorId?: string | null;
+  vendorName: string;
+  vendorAddress?: string | null;
+  vendorGstin?: string | null;
+  vendorEmail?: string | null;
+  vendorPhone?: string | null;
+
+  // Buyer details (CodeKap)
+  buyerName: string;
+  buyerAddress?: string | null;
+  buyerGstin?: string | null;
+  buyerPhone?: string | null;
+  buyerEmail?: string | null;
+
+  // Line items & calculations
+  itemsJson: string;
+  isInterState: boolean;
+  subtotal: number;
+  totalDiscount: number;
+  taxableAmount: number;
+  cgstTotal: number;
+  sgstTotal: number;
+  igstTotal: number;
+  grandTotal: number;
+  amountInWords?: string | null;
+
+  // Bank & Terms
+  showBankDetails: boolean;
+  bankDetailsJson?: string | null;
+  terms?: string | null;
+  signatoryName?: string | null;
+  signatoryCompany?: string | null;
+  signatureUrl?: string | null;
+  notes?: string | null;
+
+  createdById?: string | null;
+  createdByName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
